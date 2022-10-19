@@ -61,9 +61,9 @@ class BaseImage:
                 else:
                     H = 360 - math.acos((R - 0.5*G - 0.5*B)/(math.sqrt(R**2 + G**2 + B**2 - R*G - R*B - G*B)))
 
-                img_tabhsv[0][x][y] = H
-                img_tabhsv[1][x][y] = S
-                img_tabhsv[2][x][y] = V
+                img_tabhsv[0][x][y] = H * 100
+                img_tabhsv[1][x][y] = S * 100
+                img_tabhsv[2][x][y] = V * 100
 
         imghsv_stacked = np.dstack((img_tabhsv[0], img_tabhsv[1], img_tabhsv[2]))
         return imghsv_stacked
@@ -96,17 +96,45 @@ class BaseImage:
 
                 img_tabhsi[0][x][y] = H
                 img_tabhsi[1][x][y] = S
-                img_tabhsi[2][x][y] = I * 100
+                img_tabhsi[2][x][y] = I
 
         imghsi_stacked = np.dstack((img_tabhsi[0], img_tabhsi[1], img_tabhsi[2]))
         return imghsi_stacked
         pass
 
     def to_hsl(self) -> 'BaseImage':
-        """
-        metoda dokonujaca konwersji obrazu w atrybucie data do modelu hsl
-        metoda zwraca nowy obiekt klasy image zawierajacy obraz w docelowym modelu barw
-        """
+        img_tab = np.squeeze(np.dsplit(self.data, self.data.shape[-1]))
+        img_tabhsl = copy.copy(img_tab)
+
+        for x in range(img_tab.shape[1]):
+            for y in range(img_tab.shape[2]):
+                R = img_tab[0][x][y]
+                G = img_tab[1][x][y]
+                B = img_tab[2][x][y]
+
+                M = max(R, G, B)
+                m = min(R, G, B)
+
+                d = (M - m) / 255
+
+                L = (0.5*(M + m)) / 255
+
+                if (L > 0):
+                    S = d / (1 - abs(2 * L - 1))
+                else:
+                    S = 0
+
+                if (G >= B):
+                    H = math.acos((R - 0.5*G - 0.5*B)/(math.sqrt(R**2 + G**2 + B**2 - R*G - R*B - G*B)))
+                else:
+                    H = 360 - math.acos((R - 0.5*G - 0.5*B)/(math.sqrt(R**2 + G**2 + B**2 - R*G - R*B - G*B)))
+
+                img_tabhsl[0][x][y] = H
+                img_tabhsl[1][x][y] = S
+                img_tabhsl[2][x][y] = L
+
+        imghsl_stacked = np.dstack((img_tabhsl[0], img_tabhsl[1], img_tabhsl[2]))
+        return imghsl_stacked
         pass
 
     def to_rgb(self) -> 'BaseImage':
