@@ -30,7 +30,10 @@ class BaseImage:
         pass
 
     def show_img(self) -> None:
-        imshow(self.data)
+        if self.color_model == 4:
+            imshow(self.data, cmap='gray')
+        else:
+            imshow(self.data)
         pass
 
     def get_layer(self, layer_id: int) -> 'BaseImage':
