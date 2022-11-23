@@ -27,11 +27,8 @@ class ImageComparison(GrayScaleTransform):
         img1 = self.to_gray().data
         img2 = other.to_gray().data
 
-        image1 = Histogram(img1)
-        image2 = Histogram(img2)
-
-        hist1 = image1.values
-        hist2 = image2.values
+        hist1 = Histogram(img1).values
+        hist2 = Histogram(img2).values
 
         mse = 0
 
