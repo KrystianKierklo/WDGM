@@ -1,9 +1,11 @@
-from Lab02.BaseImage import BaseImage
-from Lab03.GrayScaleTransform import GrayScaleTransform
+from Lab02.BaseImage import *
+from Lab03.GrayScaleTransform import *
 from Lab04.Histogram import Histogram
-from Lab04.ImageComparison import ImageComparison
+from Lab04.ImageComparison import *
 from typing import Any
 
-# class Image(GrayScaleTransform, ImageComparison):
-#     def __init__(self, path: Any) -> None:
+# class Image(BaseImage, GrayScaleTransform, ImageComparison):
+#     def __init__(self, path: str) -> None:
 #         super().__init__(path)
+
+

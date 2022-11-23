@@ -1,7 +1,7 @@
 from Lab02.BaseImage import *
-from Lab03.GrayScaleTransform import GrayScaleTransform
+from Lab03.GrayScaleTransform import *
 from Lab04.Histogram import *
-#from Lab03.Image import Image
+from Lab03.Image import *
 from enum import Enum
 from typing import Any
 import numpy as np
@@ -14,27 +14,36 @@ class ImageDiffMethod(Enum):
 
 
 
-class ImageComparison(BaseImage):
-    def __init__(self, data: str) -> None:
-        super().__init__(data)
+class ImageComparison(GrayScaleTransform):
+    # def __init__(self, img: Any) -> None:
+    #     super().__init__(img)
 
     def histogram(self) -> Histogram:
         return Histogram(self.data)
         pass
 
-    def compare_to(self, other: GrayScaleTransform) -> float:
+    def compare_to(self, other: GrayScaleTransform, method: ImageDiffMethod) -> float:
 
-        image1 = GrayScaleTransform(self.data)
+        img1 = self.to_gray().data
+        img2 = other.to_gray().data
 
-        image2 = GrayScaleTransform(other)
+        image1 = Histogram(img1)
+        image2 = Histogram(img2)
 
-        hist1 = Histogram(image1.data).values
-        hist2 = Histogram(other.data).values
+        hist1 = image1.values
+        hist2 = image2.values
 
         mse = 0
 
         for x in range(len(hist1)):
-            mse = mse + ((hist1[x] - hist2[x]) ** 2)
+            mse =  mse + ((hist1[x] - hist2[x]) ** 2)
+        mse = mse / len(hist1)
 
-        return mse
+        if (method == 0):
+            wynik = round(np.sum(mse), 1)
+            return wynik
+        else:
+            rmse = math.sqrt(np.sum(mse))
+            wynik = round(rmse, 1)
+            return wynik
         pass
