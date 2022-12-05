@@ -40,3 +40,8 @@ class Histogram:
 
         plt.show()
         pass
+
+    def to_cumulated(self) -> 'Histogram':
+        dane = self.values.data
+        
+        pass
