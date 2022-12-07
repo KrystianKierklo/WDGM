@@ -21,7 +21,7 @@ class BaseImage:
     color_model: ColorModel  # atrybut przechowujacy biezacy model barw obrazu
 
     def __init__(self, path: str) -> None:
-        self.data = imread(path)
+        self.data = imread(path).astype('int16')
         self.color_model = 0
         pass
 
