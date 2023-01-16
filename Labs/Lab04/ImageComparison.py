@@ -15,8 +15,8 @@ class ImageDiffMethod(Enum):
 
 
 class ImageComparison(GrayScaleTransform):
-    # def __init__(self, img: Any) -> None:
-    #     super().__init__(img)
+    def __init__(self, img: Any) -> None:
+        super().__init__(img)
 
     def histogram(self) -> Histogram:
         return Histogram(self.data)

@@ -21,7 +21,7 @@ class BaseImage:
     color_model: ColorModel  # atrybut przechowujacy biezacy model barw obrazu
 
     def __init__(self, path: str) -> None:
-        self.data = imread(path).astype('int16')
+        self.data = imread(path)
         self.color_model = 0
         pass
 
@@ -42,7 +42,7 @@ class BaseImage:
 
     def to_hsv(self) -> 'BaseImage':
         if self.color_model == 0:
-            R, G, B = np.squeeze(np.dsplit(self.data, self.data.shape[-1]))
+            R, G, B = np.squeeze(np.dsplit(self.data, self.data.shape[-1])).astype('i')
 
             H = np.zeros((R.shape[0], R.shape[1]))
             S = np.zeros((G.shape[0], G.shape[1]))
@@ -62,10 +62,10 @@ class BaseImage:
                         S[x,y] = 0
 
                     if (G[x,y] >= B[x,y]):
-                        H[x,y] = np.arccos((R[x,y] - (0.5*G[x,y]) - (0.5*B[x,y])) / np.sqrt(((R[x,y]**2) + (G[x,y]**2)
+                        H[x,y] = np.cos(-1)*((R[x,y] - (0.5*G[x,y]) - (0.5*B[x,y])) / np.sqrt(((R[x,y]**2) + (G[x,y]**2)
                                 + (B[x,y]**2) - (R[x,y]*G[x,y]) - (R[x,y]*B[x,y]) - (G[x,y]*B[x,y]))))
                     else:
-                        H[x,y] = 360 - np.arccos((R[x,y] - (0.5*G[x,y]) - (0.5*B[x,y])) / np.sqrt(((R[x,y]**2) +
+                        H[x,y] = 360 - np.cos(-1)*((R[x,y] - (0.5*G[x,y]) - (0.5*B[x,y])) / np.sqrt(((R[x,y]**2) +
                                 (G[x,y]**2) + (B[x,y]**2) - (R[x,y]*G[x,y]) - (R[x,y]*B[x,y]) - (G[x,y]*B[x,y]))))
 
 
@@ -96,10 +96,10 @@ class BaseImage:
                     S[x,y] = 0
 
                 if (G[x, y] >= B[x, y]):
-                    H[x, y] = np.arccos((R[x, y] - (0.5 * G[x, y]) - (0.5 * B[x, y])) / (np.sqrt(((R[x, y] ** 2) +
+                    H[x, y] = np.cos(-1)*((R[x, y] - (0.5 * G[x, y]) - (0.5 * B[x, y])) / (np.sqrt(((R[x, y] ** 2) +
                     (G[x, y] ** 2)+ (B[x, y] ** 2) - (R[x, y] * G[x, y]) - (R[x, y] * B[x, y]) - (G[x, y] * B[x, y])))))
                 else:
-                    H[x, y] = 360 - np.arccos((R[x, y] - (0.5 * G[x, y]) - (0.5 * B[x, y])) / (np.sqrt(((R[x, y] ** 2) +
+                    H[x, y] = 360 - np.cos(-1)*((R[x, y] - (0.5 * G[x, y]) - (0.5 * B[x, y])) / (np.sqrt(((R[x, y] ** 2) +
                     (G[x, y] ** 2) + (B[x, y] ** 2) - (R[x, y] *G[x, y]) - (R[x, y] *B[x, y]) - (G[x, y] *B[x, y])))))
 
 
@@ -194,6 +194,7 @@ class BaseImage:
             G = np.zeros((H.shape[0], H.shape[1]))
             B = np.zeros((H.shape[0], H.shape[1]))
 
+
             for x in range(H.shape[0]):
                 for y in range(H.shape[1]):
 
@@ -226,9 +227,12 @@ class BaseImage:
             R[R>255] = 255
             G[G>255] = 255
             B[B>255] = 255
+            R[R < 0] = 0
+            G[G < 0] = 0
+            B[B < 0] = 0
 
         if self.color_model == 3:
-            H, S, L = np.squeeze(np.dsplit(self.data, self.data.shape[-1]))
+            H, S, L = np.squeeze(np.dsplit(self.data, self.data.shape[-1])).astype('uint16')
 
             R = np.zeros((H.shape[0], H.shape[1]))
             G = np.zeros((H.shape[0], H.shape[1]))
@@ -238,7 +242,7 @@ class BaseImage:
                 for y in range(H.shape[1]):
                     d = S[x,y]*(1-abs(2*L[x,y]-1))
                     m = 255 * (L[x,y] - 0.5*d)
-                    x = d(1-abs(((H[x,y]/60)%2)-1))
+                    x = d*(1-abs(((H[x,y]/60)%2)-1))
 
                     if (H[x,y]>=0 and H[x,y]<60):
                         R[x,y] = 255 * d +m
@@ -270,6 +274,5 @@ class BaseImage:
         self.data = np.dstack((R,G,B)).astype('uint16')
         self.color_model = 0
         return self
-        pass
 
 
