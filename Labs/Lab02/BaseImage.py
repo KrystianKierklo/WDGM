@@ -76,7 +76,7 @@ class BaseImage:
 
 
     def to_hsi(self) -> 'BaseImage':
-        R, G, B = np.squeeze(np.dsplit(self.data, self.data.shape[-1]))
+        R, G, B = np.squeeze(np.dsplit(self.data, self.data.shape[-1])).astype('i')
 
         H = np.zeros((R.shape[0], R.shape[1]))
         S = np.zeros((G.shape[0], G.shape[1]))
@@ -105,12 +105,13 @@ class BaseImage:
 
         self.data = np.dstack((H,S,I))
         self.color_model = 2
+
         return self
         pass
 
 
     def to_hsl(self) -> 'BaseImage':
-        R, G, B = np.squeeze(np.dsplit(self.data, self.data.shape[-1]))
+        R, G, B = np.squeeze(np.dsplit(self.data, self.data.shape[-1])).astype('i')
         H = np.zeros((R.shape[0], R.shape[1]))
         S = np.zeros((G.shape[0], G.shape[1]))
         L = np.zeros((B.shape[0], B.shape[1]))
@@ -142,7 +143,6 @@ class BaseImage:
         self.data = np.dstack((H,S,L))
         self.color_model = 3
         return self
-        pass
 
     def to_rgb(self) -> 'BaseImage':
 
@@ -219,60 +219,63 @@ class BaseImage:
                         R[x,y] = I[x,y] - I[x,y]*S[x,y]
                         G[x,y] = I[x,y] - I[x,y]*S[x,y]
                         B[x,y] = I[x,y] + 2*I[x,y]*S[x,y]
-                    else:
+                    elif (H[x,y] > 240 and H[x,y]<360):
                         R[x,y] = I[x,y] + I[x,y]*S[x,y] * (1-math.cos(H[x,y]-240)/math.cos(300-H[x,y]))
                         G[x,y] = I[x,y] - I[x,y]*S[x,y]
                         B[x,y] = I[x,y] + I[x,y]*S[x,y] * math.cos(H[x,y] -240)/ math.cos(300-H[x,y])
 
-            R[R>255] = 255
-            G[G>255] = 255
-            B[B>255] = 255
-            R[R < 0] = 0
-            G[G < 0] = 0
-            B[B < 0] = 0
+
+
 
         if self.color_model == 3:
-            H, S, L = np.squeeze(np.dsplit(self.data, self.data.shape[-1])).astype('uint16')
+            H, S, L = np.squeeze(np.dsplit(self.data, self.data.shape[-1]))
 
             R = np.zeros((H.shape[0], H.shape[1]))
             G = np.zeros((H.shape[0], H.shape[1]))
             B = np.zeros((H.shape[0], H.shape[1]))
 
-            for x in range(H.shape[0]):
-                for y in range(H.shape[1]):
-                    d = S[x,y]*(1-abs(2*L[x,y]-1))
-                    m = 255 * (L[x,y] - 0.5*d)
-                    x = d*(1-abs(((H[x,y]/60)%2)-1))
+            for i in range(H.shape[0]):
+                for j in range(H.shape[1]):
+                    d = S[i, j] * (1 - abs(2 * L[i, j] - 1))
+                    m = 255 * (L[i, j] - 0.5 * d)
+                    x = d * (1 - abs(((H[i, j] / 60) % 2) - 1))
 
-                    if (H[x,y]>=0 and H[x,y]<60):
-                        R[x,y] = 255 * d +m
-                        G[x,y] = 255*x +m
-                        B[x,y] = m
-                    elif(H[x,y]>=60 and H[x,y] <120):
-                        R[x,y] = 255 * x + m
-                        G[x,y] = 255*d + m
-                        B[x,y] = m
-                    elif(H[x,y] >= 120 and H[x,y]<180):
-                        R[x,y] = m
-                        G[x,y] = 255*d + m
-                        B[x,y] = 255 *x +m
-                    elif(H[x,y] >= 180 and H[x,y]<240):
-                        R[x,y] = m
-                        G[x,y] = 255*x + m
-                        B[x,y] = 255 * d + m
-                    elif(H[x,y] >= 240 and H[x,y] < 300):
-                        R[x,y] = 255 * x + m
-                        G[x,y] = m
-                        B[x,y] = 255 * d + m
+                    if (H[i, j] >= 0 and H[i, j] < 60):
+                        R[i, j] = 255 * d + m
+                        G[i, j] = 255 * x + m
+                        B[i, j] = m
+                    elif (H[i, j] >= 60 and H[i, j] < 120):
+                        R[i, j] = 255 * x + m
+                        G[i, j] = 255 * d + m
+                        B[i, j] = m
+                    elif (H[i, j] >= 120 and H[i, j] < 180):
+                        R[i, j] = m
+                        G[i, j] = 255 * d + m
+                        B[i, j] = 255 * x + m
+                    elif (H[i, j] >= 180 and H[i, j] < 240):
+                        R[i, j] = m
+                        G[i, j] = 255 * x + m
+                        B[i, j] = 255 * d + m
+                    elif (H[i, j] >= 240 and H[i, j] < 300):
+                        R[i, j] = 255 * x + m
+                        G[i, j] = m
+                        B[i, j] = 255 * d + m
                     else:
-                        R[x,y] = 255 * d + m
-                        G[x,y] = m
-                        B[x,y] = 255 * x + m
+                        R[i, j] = 255 * d + m
+                        G[i, j] = m
+                        B[i, j] = 255 * x + m
 
-
-
+        R[R > 255] = 255
+        G[G > 255] = 255
+        B[B > 255] = 255
+        R[R < 0] = 0
+        G[G < 0] = 0
+        B[B < 0] = 0
         self.data = np.dstack((R,G,B)).astype('uint16')
+
+
         self.color_model = 0
         return self
+
 
 
