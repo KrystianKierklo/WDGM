@@ -90,7 +90,7 @@ class Opencv:
         result_lines_img = cv2.cvtColor(obraz, cv2.COLOR_GRAY2RGB)
         for line in lines:
             x0, y0, x1, y1 = line[0]
-            cv2.line(result_lines_img, (x0, y0), (x1, y1), (0, 255, 0), 5)
+            cv2.line(result_lines_img, (x0, y0), (x1, y1), (0, 0, 255), 5)
 
         self.image = result_lines_img
         return self
